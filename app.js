@@ -8,6 +8,9 @@ var express = require('express')
   , io = require('socket.io').listen(server)
   , path = require('path');
 
+var rchat = require("./server/rchat");
+
+
 var dbinterface = require("./server/db");
 dbinterface.open(function() {
 	server.listen(3000);
@@ -55,6 +58,8 @@ app.get('/score/create', score.create_view);
 app.get('/score/update', score.update_view);
 app.post('/score/update', score.update);
 
+app.post('/a/create_group', rchat.create_group);
+
 
 
 io.configure(function () {
@@ -64,17 +69,19 @@ io.configure(function () {
 
 var chat = io.sockets.on('connection', function (socket) {
     //クライアント側からのイベントを受け取る。
-    chat.to
-    //socket.join()
-    
-    socket.on('msg send', function (msg) {
-        //イベントを実行した方に実行する
-        socket.emit('msg push', msg);
-        //イベントを実行した方以外に実行する
-        socket.broadcast.emit('msg push', msg);
+    socket.on('join', function (msg) {
+    	socket.join("g" + msg.group_id);
     });
-    //接続が解除された時に実行する
+    
+    socket.on('message', function (msg) {
+    	var room_name = "g" + msg.group_id;
+        //socket.emit('result', msg);
+    	chat.in(room_name).emit("msg_broadcast", msg)
+        //socket.broadcast.emit('msg_broadcast', msg);
+    });
+    
     socket.on('disconnect', function() {
+    	//socket.leave("g" + msg.group_id);
         console.log('disconnected');
     });
 });
