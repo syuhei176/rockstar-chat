@@ -43,6 +43,18 @@ h2 {
     font-size: 0.6em;	
 }
 
+.room-item {
+	padding: 12px 12px;
+	width: 70%;
+	height: 32px;
+	background: #ffffff;
+	border: 1px solid #a0a0a0;
+	border-radius: 4px;
+	font-weight: bold;  
+    color: #666;
+    font-size: 1em;
+}
+
 .post-area {
 	width: 82%;
 	height: 42px;
@@ -62,6 +74,39 @@ h2 {
     color: #fff;
     font-size: 1em;
 }
+
+.room-name {
+	width: 60%;
+	height: 42px;
+	resize: none;
+    font-size: 1.6em;
+    float: left;
+}
+
+.create-btn {
+	width: 24%;
+	height: 47px;
+	background: #73ffa3;
+	border: none;
+	padding: 0px 10px;
+	font-weight: bold;  
+    cursor: pointer;  
+    color: #fff;
+    font-size: 1em;
+}
+
+.return-btn {
+	width: 80px;
+	height: 47px;
+	background: #777777;
+	border: none;
+	padding: 0px 10px;
+	font-weight: bold;  
+    cursor: pointer;  
+    color: #fff;
+    font-size: 1em;
+}
+
 footer {
 	position: relative;
 	margin-top: 40px;
