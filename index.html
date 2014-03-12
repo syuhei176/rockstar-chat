@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Rockstar Chat</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+            <link rel="stylesheet" type="text/css" href="style.css">
+            <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+            <script src="http://cdn.mlkcca.com/v2.1/milkcocoa.js"></script>
+            <script src="js/rview.js"></script>
+            <script src="js/rchat.js"></script>
+            <script>
+            $(function() {
+                rview.view("roomlist", ['<div class="panel panel-primary">',
+                                    '<div class="panel-heading">',
+                                    '<h3 class="panel-title">Rooms</h3>',
+                                    '</div>',
+                                    '<div class="panel-body">',
+                                    '<button id="add-room" class="btn btn-primary">add room</button>',
+                                    '<div id="rooms"></div>',
+                                    '</div>',
+                                    '</div>'], function(args) {
+                    $("#add-room").click(function() {
+                        rview.transition("room", {});
+                    });
+                    var rooms = milkcocoa.DataStore('rooms');
+                    rooms.query({}).done(function(docs) {
+                        $('#rooms').empty();
+                        for(var i=0;i < docs.length;i++) {
+                            $('#rooms').append(docs[i].);
+                        }
+                    });
+                    $("#add-room").click(function() {
+                        rview.transition("room", {});
+                    });
+                });
+
+                //1.ミルクココアインスタンスを作成
+            	var milkcocoa = new MilkCocoa("https://mlkcca.com", "chatapp", function() {});
+                //2."message"データストアを作成
+                var ds = milkcocoa.DataStore("message");
+                //3."message"データストアからメッセージを取ってくる
+                ds.query({}).desort("date").limit(30).done(function(e) {
+                    var re = e.reverse();
+                    for(var i=0;i < re.length;i++) {
+                        renderMessage(re[i]);
+                    }
+                });
+                //4."message"データストアのプッシュイベントを監視
+                ds.on("push", function(e) {
+                    renderMessage(e.value);
+                });
+
+                var last_message = "dummy";
+                function renderMessage(message) {
+                    var message_html = '<div>' + escapeHTML(message.content) + '</div>';
+                    var date_html = '';
+                    if(message.date) {
+                        date_html = '<div class="date">'+escapeHTML(message.date.toLocaleString())+'</div>';
+                    }
+                    $("#"+last_message).before('<div id="'+message.id+'" class="message">'+message_html + date_html +'</div>');
+                    last_message = message.id;
+                }
+
+                function post() {
+                    if($("#content").val() == "") return;
+                    //5."message"データストアにメッセージをプッシュする
+                    ds.push({
+                        title : "タイトル",
+                        content : escapeHTML($("#content").val()),
+                        date : new Date()
+                    }, function(e) {
+                        $("#content").val("");
+                    });
+                }
+
+                $('#post').click(function() {
+                    post();
+                })
+                $('#content').keydown(function(e) {
+                    if(e.which == 13) {
+                        post();
+                    }
+                });
+            });
+            //インジェクション対策
+            function escapeHTML(val) {
+                return $('<div>').text(val).html();
+            };
+                </script>
+    </head>
+    <body>
+        <div id="content" class="container">
+            <div class="row">
+                <h2>Chat Application</h2>
+            </div>
+            <div class="row">
+                <textarea id="content" cols="32" class="post-area" placeholder="Enterで投稿"></textarea>
+                <button id="post" class="post-btn">投稿</button>
+            </div>
+            <div class="row">
+                <div id="messages" class="message-list">
+                    <div id="dummy"></div>
+                </div>
+            </div>
+        </div>
+            <footer>
+                Powerd by <a href="https://mlkcca.com">milkcocoa</a>.
+            </footer>
+    </body>
+</html>
