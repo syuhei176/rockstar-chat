@@ -2,11 +2,48 @@ h2 {
 	color: #232323;
 }
 
+.col3 {
+	width: 25%;
+	float: left;
+}
+.col4 {
+	width: 33%;
+	float: left;
+}
+
+.share-link {
+	top: 12px;
+	left: 10%;
+	width: 340px;
+	height: 30px;
+	font-size: 1.2em;
+}
+
 .container {
 	width: 70%;
 	padding: 12px;
 	background-color: #c7c7c7;
+	border-radius: 4px;
 	margin: 0 auto;
+}
+
+@media screen and (max-width: 980px) {
+.container {
+	width: 80%;
+	padding: 12px;
+	background-color: #c7c7c7;
+	border-radius: 4px;
+	margin: 0 auto;
+}
+}
+@media screen and (max-width: 650px) {
+.container {
+	width: 96%;
+	padding: 8px;
+	background-color: #c7c7c7;
+	border-radius: 4px;
+	margin: 0 auto;
+}
 }
 
 .row {
@@ -86,7 +123,7 @@ h2 {
 .create-btn {
 	width: 24%;
 	height: 47px;
-	background: #73ffa3;
+	background: #6afea0;
 	border: none;
 	padding: 0px 10px;
 	font-weight: bold;  
@@ -116,4 +153,15 @@ footer {
 	line-height: 1.5;
 	color: #777;
 	border-top: 1px solid #eee;
+}
+
+.social-list {
+	text-align: center;
+}
+
+.social-list li{
+	list-style: none;
+	list-style-type: disc;
+	display: inline;
+	margin: 0 10px;
 }

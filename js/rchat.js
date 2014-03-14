@@ -1,6 +1,11 @@
 (function() {
 	function add_room(room_id, name) {
 		var rooms = get_rooms();
+		for(var i=0;i < rooms.length;i++) {
+			if(rooms[i].id == room_id) {
+				return;
+			}
+		}
 		rooms.push({
 			name : name,
 			id : room_id
@@ -65,5 +70,15 @@
                     }
                 });
 	}
+    function exit_chat_room(milkcocoa, room_id) {
+        var ds = milkcocoa.DataStore("room/" + room_id + "/message");
+        ds.off("push");
+    }
+    //インジェクション対策
+	function escapeHTML(val) {
+		return $('<div>').text(val).html();
+    };
+    window.escapeHTML = escapeHTML;
 	window.init_chat_room = init_chat_room;
+    window.exit_chat_room = exit_chat_room;
 } ())

@@ -4,6 +4,8 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Rockstar Chat</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="簡単に使えるチャットサービス">
+        <meta name="keywords" content="チャット,その場,chat,websocket">
             <link rel="stylesheet" type="text/css" href="css/style.css">
             <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
             <script src="http://cdn.mlkcca.com/v2.1/milkcocoa.js"></script>
@@ -12,10 +14,14 @@
             <script>
             $(function() {
                 //1.ミルクココアインスタンスを作成
-                var milkcocoa = new MilkCocoa("https://mlkcca.com", "mlkdev-000l", function() {});
+                var milkcocoa = new MilkCocoa("https://mlkcca.com", "your app id", function() {});
 
-                rview.view("top", ['<div class="row">',
-                    '<textarea id="room-name" cols="32" class="room-name" placeholder="部屋の名前を入力してください。"></textarea>',
+                rview.view("top", [
+                    '<div class="row">',
+                    '<img src="img/rchat_logo.png">',
+                    '</div>',
+                    '<div class="row">',
+                    '<input id="room-name" type="text" class="room-name" placeholder="部屋の名前を入力してください。" />',
                     '<button id="create" class="create-btn">チャットルームの作成</button>',
                     '</div>',
                     '<div class="row">',
@@ -26,16 +32,18 @@
                         location.hash = "";
                         $('#create').click(function() {
                             var ds = milkcocoa.dataStore('room');
+                            if($('#room-name').val() == "") {
+                                return;
+                            }
                             ds.push({
                                 name : $('#room-name').val()
                             }, function(e) {
                                 rview.transition("chat", {room_id : e.value.id});
-                                add_room(e.value.id, e.value.name);
                             });
                         });
                         var rooms = get_rooms();
                         for(var i=0;i < rooms.length;i++) {
-                            $('#rooms').append('<div name="room-item" class="room-item" data-cid="'+rooms[i].id+'">' + rooms[i].name + '</div>');
+                            $('#rooms').append('<div name="room-item" class="room-item" data-cid="'+rooms[i].id+'">' + escapeHTML(rooms[i].name) + '</div>');
                         }
                         $('[name="room-item"]').click(function() {
                             var room_id = $(this).data('cid');
@@ -44,7 +52,16 @@
                 });
                 rview.view("chat", [
                     '<div class="row">',
-                    '<button class="return-btn">戻る</button>',
+                        '<div id="room-name" class="col3"></div>',
+                        '<div id="link-to-share" class="col3"></div>',
+                    '</div>',
+                    '<div class="row">',
+                        '<div class="col3">',
+                        '<button class="return-btn">戻る</button>',
+                        '</div>',
+                        '<div class="col3">',
+                        '<a id="tweet-room"><img src="img/tweet.png" alt="tweet" /></a>',
+                        '</div>',
                     '</div>',
                     '<div class="row">',
                     '<textarea id="message-content" cols="32" class="post-area" placeholder="Enterで投稿"></textarea>',
@@ -56,9 +73,19 @@
                     '</div>',
                     '</div>'
                     ], function(args) {
-                        location.hash = args.room_id;
-                        init_chat_room(milkcocoa, args.room_id);
+                        var ds = milkcocoa.dataStore('room');
+                        ds.child(args.room_id).get(function(room) {
+                            add_room(room.id, room.name);
+                            $('#room-name').html('<h2>'+escapeHTML(room.name) + '</h2>');
+                            $('#link-to-share').html('Link to share<input class="share-link" type="text" value="http://rchat.bitballoon.com/#'+room.id+'" />');
+                            $('#tweet-room').click(function() {
+                                window.open('https://twitter.com/share?url=http://rchat.bitballoon.com/%23'+room.id+'&text='+escapeHTML(room.name)+'だよ！', 'tweet', 'width=400, height=300');
+                            })
+                            location.hash = args.room_id;
+                            init_chat_room(milkcocoa, args.room_id);
+                        });
                         $('.return-btn').click(function() {
+                            exit_chat_room(milkcocoa, args.room_id);
                             rview.transition("top", {});
                         })
                 });
@@ -71,22 +98,44 @@
                 }
 
             });
-            //インジェクション対策
-            function escapeHTML(val) {
-                return $('<div>').text(val).html();
-            };
             </script>
     </head>
     <body>
         <div class="container">
-            <div class="row">
-                <h2>Chat Application</h2>
-            </div>
             <div id="content">
+                <p>その場限りのチャットルームを提供致します。</p>
+                <p>Websocketを用いてリアルタイム通信しています。</p>
             </div>
             <footer>
-                Powerd by <a href="https://mlkcca.com">milkcocoa</a>.
+                &copy; <a href="http://technicalrockstars.co.jp">Technical Rockstars, inc.</a> and
+                powerd by <a href="https://mlkcca.com">milkcocoa</a>.
+                        <ul class="social-list">
+          <!-- FACEBOOK -->
+          <li><div class="fb-like" data-href="http://rchat.bitballoon.com/" data-colorscheme="dark" data-layout="button_count" data-action="like" data-show-faces="false"></div></li>
+
+          <!-- TWITTER -->
+          <li><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://rchat.bitballoon.com/" data-text="簡単に使えるチャットサービス">Tweet</a></li>
+
+          <!-- GOOGLE PLUS -->
+          <li><g:plusone count="true" size="medium" href="http://rchat.bitballoon.com/"></g:plusone></li>
+        </ul>
             </footer>
         </div>
+
+
+             <!-- TWITTER -->
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
+    </script>
+    <!-- FACEBOOK -->
+    <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=195540880625879";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+    <!-- GOOGLE + -->
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
     </body>
 </html>
