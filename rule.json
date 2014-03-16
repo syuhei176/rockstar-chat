@@ -1,0 +1,13 @@
+{
+  "room" : {
+    "@roomid" : {
+      "#find" : "return true;",
+      "message" : {
+        "#find" : "return true;"
+      }
+    }
+  },
+"#push" : "return true;",
+"#set" : "return true;",
+"#remove" : "return true;"
+}
